@@ -23,7 +23,7 @@ namespace API.Controllers
         [HttpPost]
         [Route("Upload")]
         [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> Upload(IFormFile file, [FromQuery(Name = "name")] string name, [FromQuery(Name = "family")] string family)
+        public async Task<IActionResult> Upload(IFormFile file, [FromQuery(Name = "name")] string name, [FromQuery(Name = "category")] string category)
         {
             if (!ModelState.IsValid)
             {
@@ -45,7 +45,7 @@ namespace API.Controllers
 
             try
             {
-                await _logic.UploadFile(fileContents, name, family);
+                await _logic.UploadFile(fileContents, name, category);
             }
             catch (Exception e)
             {

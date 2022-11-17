@@ -23,7 +23,7 @@ namespace API.BusinessLogic
 
         }
 
-        public async Task UploadFile(byte[] fileContents, string name, string family)
+        public async Task UploadFile(byte[] fileContents, string name, string category)
         {
             var content = Convert.ToBase64String(fileContents);
 
@@ -31,7 +31,7 @@ namespace API.BusinessLogic
             {
                 Content = content,
                 Name = name,
-                Family = family ?? ""
+                Category = category ?? ""
             };
 
             await _instrumentCollection.InsertOneAsync(instrument);
