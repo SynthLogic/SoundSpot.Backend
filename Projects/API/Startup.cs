@@ -30,6 +30,12 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Enable CORS
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+
             // Configure jsonOptions for Controllers
             var jsonOptions = new JsonSerializerSettings
             {
@@ -55,20 +61,6 @@ namespace API
             // Add MongoDb
             services.AddSingleton(configContext.MongoDbConfiguration);
             services.AddSingleton<IMongoDbContext, MongoDbContext>();
-
-            // Configure Cors
-            var corsConfig = configContext.CorsConfiguration;
-            _corsPolicyName = corsConfig.PolicyName;
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy(_corsPolicyName, builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
-            });
 
             // Add Swagger UI
             services.AddSwaggerGen(c =>
@@ -96,6 +88,8 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -105,10 +99,8 @@ namespace API
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"./{_version}/swagger.json", "App Name");
+                c.SwaggerEndpoint($"./{_version}/swagger.json", "Synth Logic");
             });
-
-            app.UseCors(_corsPolicyName);
 
             app.UseRouting();
 
