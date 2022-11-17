@@ -19,7 +19,6 @@ namespace API
     {
         private readonly IConfiguration _configuration;
         private readonly string _version;
-        private string _corsPolicyName;
 
         public Startup(IConfiguration configuration)
         {
