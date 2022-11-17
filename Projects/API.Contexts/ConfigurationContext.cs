@@ -6,6 +6,5 @@ namespace API.Contexts
     {
         public const string Name = "ConfigurationContext";
         public MongoDbConfiguration MongoDbConfiguration { get; set; }
-        public CorsConfiguration CorsConfiguration { get; set; }
     }
 }
