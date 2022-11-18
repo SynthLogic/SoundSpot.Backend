@@ -50,7 +50,10 @@ namespace API.BusinessLogic
         {
             var filter = Builders<Instrument>.Filter.Eq(f => f.Name, name);
 
-            var result = await (await _instrumentCollection.FindAsync(filter)).FirstOrDefaultAsync();
+            var result = await (await _instrumentCollection.FindAsync(filter, new FindOptions<Instrument>
+            {
+                Collation = new Collation("en", strength: CollationStrength.Secondary)
+            })).FirstOrDefaultAsync();
 
             return result;
         }
