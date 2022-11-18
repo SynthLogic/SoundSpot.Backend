@@ -82,6 +82,7 @@ namespace API
 
             // Add Business Logic
             services.AddTransient<InstrumentLogic>();
+            services.AddTransient<UserLogic>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

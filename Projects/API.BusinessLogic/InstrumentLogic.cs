@@ -16,13 +16,8 @@ namespace API.BusinessLogic
         public InstrumentLogic(IMongoDbContext dbContext)
         {
             _dbContext = dbContext;
-            if (!_dbContext.TryGetDatabase(out var db))
-            {
-                return;
-            }
-
+            if (!_dbContext.TryGetDatabase(out var db)) return;
             _instrumentCollection = db.GetCollection<Instrument>(Instrument.CollectionName);
-
         }
 
         public async Task UploadFile(byte[] fileContents, string name, string category)
