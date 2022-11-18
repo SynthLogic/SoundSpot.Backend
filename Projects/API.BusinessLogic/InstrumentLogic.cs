@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Contexts.Interfaces;
 using API.Models;
@@ -6,12 +8,12 @@ using MongoDB.Driver;
 
 namespace API.BusinessLogic
 {
-    public class UploadLogic
+    public class InstrumentLogic
     {
         private readonly IMongoDbContext _dbContext;
         private readonly IMongoCollection<Instrument> _instrumentCollection;
 
-        public UploadLogic(IMongoDbContext dbContext)
+        public InstrumentLogic(IMongoDbContext dbContext)
         {
             _dbContext = dbContext;
             if (!_dbContext.TryGetDatabase(out var db))
@@ -35,6 +37,22 @@ namespace API.BusinessLogic
             };
 
             await _instrumentCollection.InsertOneAsync(instrument);
+        }
+
+        public async Task<List<Instrument>> GetAllFiles()
+        {
+            var result = await (await _instrumentCollection.FindAsync(_ => true)).ToListAsync();
+
+            return result.Any() ? result : new List<Instrument>();
+        }
+
+        public async Task<Instrument> GetFile(string name)
+        {
+            var filter = Builders<Instrument>.Filter.Eq(f => f.Name, name);
+
+            var result = await (await _instrumentCollection.FindAsync(filter)).FirstOrDefaultAsync();
+
+            return result;
         }
     }
 }

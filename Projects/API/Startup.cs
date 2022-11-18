@@ -71,7 +71,7 @@ namespace API
                         Email = "mike.avgeros@gmail.com",
                         Name = "Mike Avgeros"
                     },
-                    Description = "Provides access to the API",
+                    Description = "Provides access to the SoundSpot API",
                     License = null,
                     TermsOfService = null,
                     Title = Assembly.GetExecutingAssembly().GetName().Name,
@@ -81,7 +81,7 @@ namespace API
             });
 
             // Add Business Logic
-            services.AddTransient<UploadLogic>();
+            services.AddTransient<InstrumentLogic>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,7 +98,7 @@ namespace API
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"./{_version}/swagger.json", "Synth Logic");
+                c.SwaggerEndpoint($"./{_version}/swagger.json", "Sound Spot");
             });
 
             app.UseRouting();

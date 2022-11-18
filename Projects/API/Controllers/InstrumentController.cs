@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using API.BusinessLogic;
+using API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +14,9 @@ namespace API.Controllers
     [ApiController]
     public class InstrumentController : ControllerBase
     {
-        private readonly UploadLogic _logic;
+        private readonly InstrumentLogic _logic;
 
-        public InstrumentController(UploadLogic logic)
+        public InstrumentController(InstrumentLogic logic)
         {
             _logic = logic;
         }
@@ -23,6 +24,8 @@ namespace API.Controllers
         [HttpPost]
         [Route("Upload")]
         [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Upload(IFormFile file, [FromQuery(Name = "name")] string name, [FromQuery(Name = "category")] string category)
         {
             if (!ModelState.IsValid)
@@ -49,10 +52,56 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                StatusCode(500, $"Unable to add instrument to the database:\r\n{e}");
+                return StatusCode(500, $"Unable to add instrument to the database:\r\n{e}");
             }
 
             return Ok("Instrument successfully added to the database");
+        }
+
+        [HttpGet]
+        [Route("GetAll")]
+        [ProducesResponseType(typeof(List<Instrument>), 200)]
+        public async Task<IActionResult> GetAll()
+        {
+            List<Instrument> result;
+
+            try
+            {
+                result = await _logic.GetAllFiles();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Unable to get instruments from the database:\r\n{e}");
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("GetOne/{name}")]
+        [ProducesResponseType(typeof(Instrument), 200)]
+        public async Task<IActionResult> GetOne([FromRoute] string name)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Please provide a name for the instrument");
+
+            Instrument result;
+
+            try
+            {
+                result = await _logic.GetFile(name);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Unable to get {name} from the database:\r\n{e}");
+            }
+
+            return Ok(result);
         }
 
         private static byte[] ReadFormFile(IFormFile file)
