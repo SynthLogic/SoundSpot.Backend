@@ -81,7 +81,7 @@ namespace API
             });
 
             // Add Business Logic
-            services.AddTransient<InstrumentLogic>();
+            services.AddTransient<FileLogic>();
             services.AddTransient<UserLogic>();
         }
 

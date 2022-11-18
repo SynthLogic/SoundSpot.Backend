@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace API.Models
 {
-    public class Instrument
+    public class File
     {
         [BsonIgnore]
         public const string CollectionName = "instruments";

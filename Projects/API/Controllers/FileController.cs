@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using API.BusinessLogic;
-using API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +11,11 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InstrumentController : ControllerBase
+    public class FileController : ControllerBase
     {
-        private readonly InstrumentLogic _logic;
+        private readonly FileLogic _logic;
 
-        public InstrumentController(InstrumentLogic logic)
+        public FileController(FileLogic logic)
         {
             _logic = logic;
         }
@@ -52,7 +51,7 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500, $"Unable to add instrument to the database:\r\n{e}");
+                return StatusCode(500, $"Unable to add the data to the database:\r\n{e}");
             }
 
             return Ok("Instrument successfully added to the database");
@@ -60,28 +59,27 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        [ProducesResponseType(typeof(List<Instrument>), 200)]
+        [ProducesResponseType(typeof(List<Models.File>), 200)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> GetAll()
         {
-            List<Instrument> result;
-
             try
             {
-                result = await _logic.GetAllFiles();
+                var result = await _logic.GetAllFiles();
+                return Ok(result);
             }
             catch (Exception e)
             {
-                return StatusCode(500, $"Unable to get instruments from the database:\r\n{e}");
+                return StatusCode(500, $"Unable to get the data from the database:\r\n{e}");
             }
-
-            return Ok(result);
         }
 
         [HttpGet]
-        [Route("GetOne/{name}")]
-        [ProducesResponseType(typeof(Instrument), 200)]
+        [Route("Get/{name}")]
+        [ProducesResponseType(typeof(Models.File), 200)]
+        [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<IActionResult> GetOne([FromRoute] string name)
+        public async Task<IActionResult> GetOne([FromQuery] string contentType, [FromRoute] string name)
         {
             if (!ModelState.IsValid)
             {
@@ -93,7 +91,7 @@ namespace API.Controllers
 
             try
             {
-                var result = await _logic.GetFile(name);
+                var result = await _logic.GetFile(contentType, name);
                 return Ok(result);
             }
             catch (Exception e)
