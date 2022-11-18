@@ -20,13 +20,15 @@ namespace API.BusinessLogic
             _instrumentCollection = db.GetCollection<Instrument>(Instrument.CollectionName);
         }
 
-        public async Task UploadFile(byte[] fileContents, string name, string category)
+        public async Task UploadFile(byte[] fileContents, string contentType, long fileSize, string name, string category)
         {
             var content = Convert.ToBase64String(fileContents);
 
             var instrument = new Instrument
             {
                 Content = content,
+                ContentType = contentType,
+                FileSize = fileSize,
                 Name = name,
                 Category = category ?? ""
             };

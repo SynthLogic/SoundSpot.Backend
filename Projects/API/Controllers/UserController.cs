@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using API.BusinessLogic;
+using API.Models;
 
 namespace API.Controllers
 {
@@ -20,11 +21,11 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("Create")]
+        [Route("Register")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<IActionResult> CreateUser([FromForm] string username, [FromForm] string email, [FromForm] string password)
+        public async Task<IActionResult> Register([FromForm] string username, [FromForm] string email, [FromForm] string password)
         {
             if (!ModelState.IsValid)
             {
@@ -55,6 +56,39 @@ namespace API.Controllers
             }
 
             return Ok("User successfully added to the database");
+        }
+
+        [HttpGet]
+        [Route("Login/{email}/{password}")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(string), 500)]
+        public async Task<IActionResult> Login([FromRoute] string email, [FromRoute] string password)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(email) && !IsValid(email))
+                errors.Add("Please provide a valid email");
+
+            if (string.IsNullOrWhiteSpace(password))
+                errors.Add("Please provide a password");
+
+            if (errors.Any())
+                return BadRequest(string.Join(',', errors));
+
+            try
+            {
+                var user = await _logic.GetUser(email, password);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Unable to find user in the database:\r\n{e}");
+            }
         }
 
         private static bool IsValid(string email)

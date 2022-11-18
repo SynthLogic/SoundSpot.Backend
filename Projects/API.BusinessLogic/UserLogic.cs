@@ -25,12 +25,23 @@ namespace API.BusinessLogic
                 Username = username,
                 Email = email,
                 Password = User.CalculateHash(password),
+                ProfilePicture = null,
                 HighestScore = 0,
                 LatestScore = 0,
                 LatestUpDateTime = DateTime.Now
             };
 
             await _userCollection.InsertOneAsync(user);
+        }
+
+        public async Task<User> GetUser(string email, string password)
+        {
+            var filter = Builders<User>.Filter.Eq(f => f.Email, email) &
+                         Builders<User>.Filter.Eq(f => f.Password, User.CalculateHash(password));
+
+            var user = await (await _userCollection.FindAsync(filter)).FirstOrDefaultAsync();
+
+            return user;
         }
     }
 }

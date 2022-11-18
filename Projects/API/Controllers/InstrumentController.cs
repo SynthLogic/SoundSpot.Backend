@@ -48,7 +48,7 @@ namespace API.Controllers
 
             try
             {
-                await _logic.UploadFile(fileContents, name, category);
+                await _logic.UploadFile(fileContents, file.ContentType, file.Length, name, category);
             }
             catch (Exception e)
             {
@@ -80,6 +80,7 @@ namespace API.Controllers
         [HttpGet]
         [Route("GetOne/{name}")]
         [ProducesResponseType(typeof(Instrument), 200)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> GetOne([FromRoute] string name)
         {
             if (!ModelState.IsValid)
@@ -90,18 +91,15 @@ namespace API.Controllers
             if (string.IsNullOrWhiteSpace(name))
                 return BadRequest("Please provide a name for the instrument");
 
-            Instrument result;
-
             try
             {
-                result = await _logic.GetFile(name);
+                var result = await _logic.GetFile(name);
+                return Ok(result);
             }
             catch (Exception e)
             {
                 return StatusCode(500, $"Unable to get {name} from the database:\r\n{e}");
             }
-
-            return Ok(result);
         }
 
         private static byte[] ReadFormFile(IFormFile file)
