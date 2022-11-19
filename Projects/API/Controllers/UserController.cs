@@ -57,7 +57,7 @@ namespace API.Controllers
             }            
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("Login")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(typeof(string), 400)]
@@ -83,7 +83,9 @@ namespace API.Controllers
             try
             {
                 var user = await _logic.GetUser(email, password);
-                return Ok(user);
+                return user is null
+                    ? StatusCode(500, "Unable to find user in the database")
+                    : Ok(user);
             }
             catch (Exception e)
             {
