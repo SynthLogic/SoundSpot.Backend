@@ -49,20 +49,20 @@ namespace API.Controllers
             try
             {
                 await _logic.CreateUser(username, email, password);
+                return Ok("User successfully added to the database");
             }
             catch (Exception e)
             {
                 return StatusCode(500, $"Unable to add instrument to the database:\r\n{e}");
-            }
-
-            return Ok("User successfully added to the database");
+            }            
         }
 
         [HttpGet]
-        [Route("Login/{email}/{password}")]
+        [Route("Login")]
         [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<IActionResult> Login([FromRoute] string email, [FromRoute] string password)
+        public async Task<IActionResult> Login([FromForm] string email, [FromForm] string password)
         {
             if (!ModelState.IsValid)
             {
@@ -93,9 +93,9 @@ namespace API.Controllers
 
         [HttpPatch]
         [Route("Update/{email}/{username}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> UpdateUser([FromRoute] string email, [FromRoute] string username, [FromBody] User updatedData)
         {
             if (!ModelState.IsValid)
