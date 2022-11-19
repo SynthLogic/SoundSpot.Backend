@@ -43,5 +43,53 @@ namespace API.BusinessLogic
 
             return user;
         }
+
+        public async Task<bool> UpdateUser(string email, string username, User updatedData)
+        {
+            try
+            {
+                var filter = Builders<User>.Filter.Eq(f => f.Email, email) &
+                             Builders<User>.Filter.Eq(f => f.Username, username);
+
+                var user = await (await _userCollection.FindAsync(filter)).FirstOrDefaultAsync();
+
+                var properties = typeof(User).GetProperties();
+
+                foreach (var property in properties)
+                {
+                    if (!property.CanRead && property.CanWrite) continue;
+                    if (property.GetValue(updatedData) is null) continue;
+
+                    if (property.PropertyType.Name == "Int32")
+                    {
+                        if ((int) property.GetValue(updatedData) == 0 || 
+                            (int) property.GetValue(updatedData) == -1)
+                            continue;
+                    }
+                    if (string.Equals(property.Name, "Password", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        var password = property.GetValue(updatedData);
+                        var hashedPassword = User.CalculateHash(password.ToString());
+                        property.SetValue(user, hashedPassword);
+                    }
+                    else if (string.Equals(property.Name, "LatestUpDateTime", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        property.SetValue(user, DateTime.Now);
+                    }
+                    else
+                    {
+                        property.SetValue(user, property.GetValue(updatedData));
+                    }
+                }
+
+                await _userCollection.ReplaceOneAsync(filter, user);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

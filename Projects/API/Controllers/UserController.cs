@@ -91,6 +91,45 @@ namespace API.Controllers
             }
         }
 
+        [HttpPatch]
+        [Route("Update/{email}/{username}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateUser([FromRoute] string email, [FromRoute] string username, [FromBody] User updatedData)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(email) && !IsValid(email))
+                errors.Add("Please provide your email");
+
+            if (string.IsNullOrWhiteSpace(username))
+                errors.Add("Please provide your username");
+
+            if (updatedData is null)
+                errors.Add("Please provide a body with the updated data");
+
+            if (errors.Any())
+                return BadRequest(string.Join(',', errors));
+
+            try
+            {
+                var result = await _logic.UpdateUser(email, username, updatedData);
+                return !result
+                    ? StatusCode(500,"Unable to update user")
+                    : Ok("Successfully updated user");
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Unable to find user in the database:\r\n{e}");
+            }
+        }
+
         private static bool IsValid(string email)
         {
             try
