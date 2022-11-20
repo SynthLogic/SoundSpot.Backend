@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using API.BusinessLogic;
@@ -149,10 +148,10 @@ namespace API.Controllers
             try
             {
                 var regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-                var match = regex.Match(email);
+                var match = regex.Match(email ?? "");
                 return match.Success;
             }
-            catch (FormatException)
+            catch (ArgumentNullException)
             {
                 return false;
             }
