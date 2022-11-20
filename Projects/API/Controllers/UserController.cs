@@ -38,7 +38,10 @@ namespace API.Controllers
             if (string.IsNullOrWhiteSpace(username))
                 errors.Add("Please provide a username");
 
-            if (string.IsNullOrWhiteSpace(email) && !IsValid(email))
+            if (string.IsNullOrWhiteSpace(email))
+                errors.Add("Please provide an email");
+
+            if (!IsValid(email))
                 errors.Add("Please provide a valid email");
 
             if (string.IsNullOrWhiteSpace(password))
@@ -73,7 +76,10 @@ namespace API.Controllers
 
             var errors = new List<string>();
 
-            if (string.IsNullOrWhiteSpace(email) && !IsValid(email))
+            if (string.IsNullOrWhiteSpace(email))
+                errors.Add("Please provide an email");
+
+            if (!IsValid(email))
                 errors.Add("Please provide a valid email");
 
             if (string.IsNullOrWhiteSpace(password))
@@ -111,16 +117,16 @@ namespace API.Controllers
             var errors = new List<string>();
 
             if (string.IsNullOrWhiteSpace(email))
-                errors.Add("Please provide your email");
+                errors.Add("Please provide an email");
 
             if (!IsValid(email))
                 errors.Add("Please provide a valid email");
 
             if (string.IsNullOrWhiteSpace(username))
-                errors.Add("Please provide your username");
+                errors.Add("Please provide a username");
 
             if (updatedData is null)
-                errors.Add("Please provide a body with the updated data");
+                errors.Add("Please provide data to update");
 
             if (errors.Any())
                 return BadRequest(string.Join(',', errors));
