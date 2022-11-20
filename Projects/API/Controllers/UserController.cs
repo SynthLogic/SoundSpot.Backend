@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using API.BusinessLogic;
 using API.Models;
+using AutoMapper;
 using System.Text.RegularExpressions;
 
 namespace API.Controllers
@@ -14,10 +15,12 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserLogic _logic;
+        private readonly IMapper _mapper;
 
-        public UserController(UserLogic logic)
+        public UserController(UserLogic logic, IMapper mapper)
         {
             _logic = logic;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -62,7 +65,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("Login")]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(UserDto), 200)]
         [ProducesResponseType(typeof(string), 204)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
@@ -92,7 +95,7 @@ namespace API.Controllers
                 var user = await _logic.GetUser(email, password);
                 return user is null
                     ? StatusCode(204, "Unable to find user in the database")
-                    : Ok(user);
+                    : Ok(_mapper.Map<User, UserDto>(user));
             }
             catch (Exception e)
             {

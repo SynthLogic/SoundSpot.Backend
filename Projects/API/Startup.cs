@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using System.Reflection;
 using API.BusinessLogic;
+using API.Models;
 using API.Contexts;
 using API.Contexts.Interfaces;
 using Microsoft.OpenApi.Models;
@@ -59,6 +60,9 @@ namespace API
             // Add MongoDb
             services.AddSingleton(configContext.MongoDbConfiguration);
             services.AddSingleton<IMongoDbContext, MongoDbContext>();
+
+            // Configure AutoMapper
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(ApiProfiles)));
 
             // Add Swagger UI
             services.AddSwaggerGen(c =>
