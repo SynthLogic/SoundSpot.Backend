@@ -60,6 +60,7 @@ namespace API.Controllers
         [HttpPost]
         [Route("Login")]
         [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(string), 204)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Login([FromForm] string email, [FromForm] string password)
@@ -84,7 +85,7 @@ namespace API.Controllers
             {
                 var user = await _logic.GetUser(email, password);
                 return user is null
-                    ? StatusCode(500, "Unable to find user in the database")
+                    ? StatusCode(204, "Unable to find user in the database")
                     : Ok(user);
             }
             catch (Exception e)
@@ -96,6 +97,7 @@ namespace API.Controllers
         [HttpPatch]
         [Route("Update/{email}/{username}")]
         [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 204)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> UpdateUser([FromRoute] string email, [FromRoute] string username, [FromBody] User updatedData)
@@ -123,7 +125,7 @@ namespace API.Controllers
             {
                 var result = await _logic.UpdateUser(email, username, updatedData);
                 return !result
-                    ? StatusCode(500,"Unable to update user")
+                    ? StatusCode(204,"Unable to find user in the database")
                     : Ok("Successfully updated user");
             }
             catch (Exception e)

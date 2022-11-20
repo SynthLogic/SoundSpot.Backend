@@ -40,7 +40,7 @@ namespace API.Controllers
                 errors.Add("The attached file is empty.");
 
             if (string.IsNullOrWhiteSpace(name))
-                errors.Add("Please provide a name for the instrument");
+                errors.Add("Please provide a name for the file");
 
             if (errors.Any())
                 return BadRequest(string.Join(',', errors));
@@ -60,13 +60,16 @@ namespace API.Controllers
         [HttpGet]
         [Route("GetAll")]
         [ProducesResponseType(typeof(List<Models.File>), 200)]
+        [ProducesResponseType(typeof(string), 204)]
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> GetAll()
         {
             try
             {
                 var result = await _logic.GetAllFiles();
-                return Ok(result);
+                return !result.Any()
+                    ? StatusCode(204, "Couldn't find any files in the database")
+                    : Ok(result);
             }
             catch (Exception e)
             {
@@ -77,6 +80,7 @@ namespace API.Controllers
         [HttpGet]
         [Route("Get/{name}")]
         [ProducesResponseType(typeof(Models.File), 200)]
+        [ProducesResponseType(typeof(string), 204)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> GetOne([FromQuery] string contentType, [FromRoute] string name)
@@ -86,13 +90,23 @@ namespace API.Controllers
                 return BadRequest();
             }
 
+            var errors = new List<string>();
+
             if (string.IsNullOrWhiteSpace(name))
-                return BadRequest("Please provide a name for the instrument");
+                errors.Add("Please provide the name of the file you are looking for");
+
+            if (string.IsNullOrWhiteSpace(contentType))
+                errors.Add("Please provide the content type of the file you are looking for");
+
+            if (errors.Any())
+                return BadRequest(string.Join(',', errors));
 
             try
             {
                 var result = await _logic.GetFile(contentType, name);
-                return Ok(result);
+                return result is null
+                    ? StatusCode(204, "Unable to find the file in the database")
+                    : Ok(result);
             }
             catch (Exception e)
             {
