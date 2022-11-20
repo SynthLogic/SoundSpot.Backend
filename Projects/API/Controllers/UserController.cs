@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using API.BusinessLogic;
 using API.Models;
+using System.Text.RegularExpressions;
 
 namespace API.Controllers
 {
@@ -109,8 +110,11 @@ namespace API.Controllers
 
             var errors = new List<string>();
 
-            if (string.IsNullOrWhiteSpace(email) && !IsValid(email))
+            if (string.IsNullOrWhiteSpace(email))
                 errors.Add("Please provide your email");
+
+            if (!IsValid(email))
+                errors.Add("Please provide a valid email");
 
             if (string.IsNullOrWhiteSpace(username))
                 errors.Add("Please provide your username");
@@ -138,8 +142,9 @@ namespace API.Controllers
         {
             try
             {
-                var m = new MailAddress(email);
-                return true;
+                var regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+                var match = regex.Match(email);
+                return match.Success;
             }
             catch (FormatException)
             {
