@@ -43,7 +43,7 @@ namespace API.Controllers
                 errors.Add("Please provide a name for the file");
 
             if (errors.Any())
-                return BadRequest(string.Join(',', errors));
+                return BadRequest(string.Join("\r\n", errors));
 
             try
             {
@@ -99,7 +99,7 @@ namespace API.Controllers
                 errors.Add("Please provide the content type of the file you are looking for");
 
             if (errors.Any())
-                return BadRequest(string.Join(',', errors));
+                return BadRequest(string.Join("\r\n", errors));
 
             try
             {

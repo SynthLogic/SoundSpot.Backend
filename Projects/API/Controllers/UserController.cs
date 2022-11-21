@@ -50,7 +50,7 @@ namespace API.Controllers
                 errors.Add("Please provide a password");
 
             if (errors.Any())
-                return BadRequest(string.Join(',', errors));
+                return BadRequest(string.Join("\r\n", errors));
 
             try
             {
@@ -88,7 +88,7 @@ namespace API.Controllers
                 errors.Add("Please provide a password");
 
             if (errors.Any())
-                return BadRequest(string.Join(',', errors));
+                return BadRequest(string.Join("\r\n", errors));
 
             try
             {
@@ -131,7 +131,7 @@ namespace API.Controllers
                 errors.Add("Please provide data to update");
 
             if (errors.Any())
-                return BadRequest(string.Join(',', errors));
+                return BadRequest(string.Join("\r\n", errors));
 
             try
             {
