@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using API.BusinessLogic;
+using API.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +16,12 @@ namespace API.Controllers
     public class FileController : ControllerBase
     {
         private readonly FileLogic _logic;
+        private readonly IMapper _mapper;
 
-        public FileController(FileLogic logic)
+        public FileController(FileLogic logic, IMapper mapper)
         {
             _logic = logic;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -59,7 +63,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        [ProducesResponseType(typeof(List<Models.File>), 200)]
+        [ProducesResponseType(typeof(List<FileDto>), 200)]
         [ProducesResponseType(typeof(string), 204)]
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> GetAll()
@@ -69,7 +73,7 @@ namespace API.Controllers
                 var result = await _logic.GetAllFiles();
                 return !result.Any()
                     ? StatusCode(204, "Couldn't find any files in the database")
-                    : Ok(result);
+                    : Ok(_mapper.Map<List<Models.File>, List<FileDto>>(result));
             }
             catch (Exception e)
             {
@@ -79,7 +83,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("Get/{name}")]
-        [ProducesResponseType(typeof(Models.File), 200)]
+        [ProducesResponseType(typeof(FileDto), 200)]
         [ProducesResponseType(typeof(string), 204)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
@@ -106,7 +110,7 @@ namespace API.Controllers
                 var result = await _logic.GetFile(contentType, name);
                 return result is null
                     ? StatusCode(204, "Unable to find the file in the database")
-                    : Ok(result);
+                    : Ok(_mapper.Map<Models.File, FileDto>(result));
             }
             catch (Exception e)
             {

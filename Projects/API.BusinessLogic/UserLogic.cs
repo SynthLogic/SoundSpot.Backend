@@ -18,8 +18,15 @@ namespace API.BusinessLogic
             _userCollection = db.GetCollection<User>(User.CollectionName);
         }
 
-        public async Task CreateUser(string username, string email, string password)
+        public async Task<string> CreateUser(string username, string email, string password)
         {
+            var exists = await GetUser(email, password);
+
+            if (exists != null)
+            {
+                return "A user with these credentials already exists";
+            }
+
             var user = new User
             {
                 Username = username,
@@ -32,6 +39,8 @@ namespace API.BusinessLogic
             };
 
             await _userCollection.InsertOneAsync(user);
+
+            return null;
         }
 
         public async Task<User> GetUser(string email, string password)

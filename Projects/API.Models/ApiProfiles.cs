@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 
 namespace API.Models
 {
@@ -7,6 +8,7 @@ namespace API.Models
         public ApiProfiles()
         {
             CreateMap<User, UserDto>();
+            CreateMap<File, FileDto>();
         }
     }
 }

@@ -54,12 +54,14 @@ namespace API.Controllers
 
             try
             {
-                await _logic.CreateUser(username, email, password);
-                return Ok("User successfully added to the database");
+                var result = await _logic.CreateUser(username, email, password);
+                return result is null
+                    ? Ok("User successfully added to the database")
+                    : StatusCode(409, result);
             }
             catch (Exception e)
             {
-                return StatusCode(500, $"Unable to add instrument to the database:\r\n{e}");
+                return StatusCode(500, $"Unable to add user to the database:\r\n{e}");
             }            
         }
 
